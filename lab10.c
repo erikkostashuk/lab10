@@ -25,8 +25,7 @@
 #include <netinet/in.h>
 #include <netinet/ip.h>
 
-void packetCallback(u_char *args, const struct pcap_pkthdr *header,
-		const u_char *packet);
+void packetCallback(u_char *args, const struct pcap_pkthdr *header, const u_char *packet);
 
 int main(int argc, char **argv) {
 	char *device;
@@ -109,6 +108,11 @@ void processIP(const u_char *packet) {
 		printf("UDP packet\n");
 		// call the UDP procedure here
 	}
+
+	printf("time to live: %d \n", ip->ttl);
+	printf("id: %d \n", ip->id);
+	printf("frag: %d \n", ip->frag_off);
+
 	/*
 	 *  print the source and destination addresses
 	 */
@@ -125,20 +129,25 @@ void processIP(const u_char *packet) {
  *  ethernet packets.  If the payload is an IP packet
  *  processIP() is called to process it.
  */
-void packetCallback(u_char *args, const struct pcap_pkthdr *header,
-		const u_char *packet) {
+void packetCallback(u_char *args, const struct pcap_pkthdr *header, const u_char *packet) {
 	struct ether_header *eptr;
 	short type;
 
 	printf("time: %s", ctime((const time_t*) &header->ts.tv_sec));
 	eptr = (struct ether_header *) packet;
 	type = ntohs(eptr->ether_type);
+
+	printf("MAC source: %hhu:%hhu:%hhu:%hhu:%hhu:%hhu\n", eptr->ether_dhost);
+	printf("MAC destination: %hhu:%hhu:%hhu:%hhu:%hhu:%hhu\n", eptr->ether_shost);
+
 	if(type == ETHERTYPE_IP) {
 		printf("IP packet\n");
 		processIP(packet+14);
+
 	}
 	if(type == ETHERTYPE_ARP) {
 		printf("arp packet\n");
 	}
+
 	printf("\n");
 }
