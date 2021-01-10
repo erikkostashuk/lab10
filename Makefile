@@ -1,7 +1,7 @@
 CFLAGS = -Wall -g
 
-lab10: lab10.o
-	cc -o lab10 lab10.o -lpcap
+packet-sniffing: packet-sniffing.o
+	cc -o packet-sniffing packet-sniffing.o -lpcap
 
 clean :
-	rm lab10.o lab10
+	rm packet-sniffing.o packet-sniffing
